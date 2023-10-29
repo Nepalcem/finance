@@ -1,25 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import io from "socket.io-client";
 
-function App() {
+const App = () => {
+  const [quotes, setQuotes] = useState([]);
+console.log(quotes);
+  useEffect(() => {
+    const socket = io("http://localhost:4000");
+
+    socket.on("quotes", (newQuotes) => {
+      setQuotes(newQuotes);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Stock Quotes</h1>
+      <ul>
+        {quotes.map((quote, index) => (
+          <li key={index}>
+            <strong>Ticker:</strong> {quote.ticker},<strong> Price:</strong>{" "}
+            {quote.price},<strong> Change:</strong> {quote.change},
+            <strong> Change Percent:</strong> {quote.change_percent}
+          </li>
+        ))}
+      </ul>
     </div>
   );
-}
+};
 
 export default App;
